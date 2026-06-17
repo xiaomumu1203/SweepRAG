@@ -1,0 +1,5 @@
+# Redis 记忆配置
+redis:
+  url: redis://localhost:6379/0
+  index_key: memory:sessions
+  ttl: null  # 每条消息的 TTL（秒），不设则永久保留
