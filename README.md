@@ -53,10 +53,13 @@ SweepRAG/
 ### 2. 安装依赖
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/xiaomumu1203/SweepRAG.git
 cd SweepRAG
 python -m venv venv
+# Windows (CMD / PowerShell):
 .\venv\Scripts\activate
+# Mac / Linux (Bash / Zsh):
+# source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -64,7 +67,14 @@ pip install -r requirements.txt
 
 API Key 从环境变量读取，无需修改配置文件：
 ```bash
-setx DASHSCOPE_API_KEY "sk-xxx"   # Windows 系统变量（重启终端后生效）
+# 方式一（推荐）：在项目根目录创建 .env 文件，写入：
+DASHSCOPE_API_KEY=sk-xxx
+
+# 方式二（临时设置，仅当前终端有效）：
+# Windows (CMD):
+# set DASHSCOPE_API_KEY=sk-xxx
+# Mac / Linux:
+# export DASHSCOPE_API_KEY=sk-xxx
 ```
 
 ### 4. 启动
