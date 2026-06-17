@@ -4,6 +4,7 @@
 
 ## 项目结构
 
+```text
 SweepRAG/
 ├── agent/                     # ReAct Agent 核心
 │   ├── ReAct_agent.py         # Agent 主类（LangChain Runnable）
@@ -41,6 +42,7 @@ SweepRAG/
 │   └── logger_handler.py      # 日志配置
 ├── app.py                     # Streamlit 前端（可替换）
 ├── requirements.txt           # Python 依赖
+```
 
 ## 快速开始
 ### 1. 环境要求
@@ -78,6 +80,7 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 核心架构
 ### RAG 检索
+```text
 用户查询
     │
     ▼
@@ -87,9 +90,11 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
     │
     ▼
 RRF 排序融合 → Top-K 结果
+```
 
 
 ### ReAct Agent 推理
+```text
 用户输入 → _build_input（Token 检查 + 上下文压缩）
     │
     ▼
@@ -99,14 +104,17 @@ LLM 思考（qwen3-max）
     │
     ▼
 _persist_turn → Redis 存储
+```
 
 ### 上下文压缩
 当会话累计 Token 超过阈值时自动触发，使用 **tiktoken** 本地实时计数，不依赖 API 元数据：
 
+```text
 对话历史 > 16,000 Token
     │
     ├── 从后往前逐轮累计 Token，尽量填充预算
     └── 超出预算的部分 → LLM 压缩为 200 字摘要，注入 SystemPrompt
+```
 
 采用**动态 Token 感知压缩**，压缩器从最新一轮向前逐轮计算 Token 数，
 在 `context_max_tokens` 预算内尽可能多地保留完整轮次（预留约 300 Token 给摘要），
