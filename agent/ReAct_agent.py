@@ -10,14 +10,18 @@ from utils.token_counter import count_message_tokens
 from typing import Any, Dict, Iterator, Optional
 
 
+MAX_ITERATIONS_REACHED = "已超过最大工具调用次数，请简化您的问题或提供更明确的信息。"
+
 class ReActAgent(Runnable):
     def __init__(
         self,
         memory_store: Any = None,
         context_max_tokens: int = 16000,
+        max_iterations: int = 5,
     ):
         self.memory_store = memory_store
         self.context_max_tokens = context_max_tokens
+        self.max_iterations = max_iterations
         self.agent = create_agent(
             model=chat_model,
             system_prompt=load_system_prompts(),
@@ -30,11 +34,19 @@ class ReActAgent(Runnable):
 
 
     def stream(self, input: Dict[str, Any], config: Optional[RunnableConfig] = None) -> Iterator[Any]:
+        tool_call_count = 0
         for chunk in self.agent.stream(input, stream_mode="values", config=config, context={"report": False}):
             if chunk.get("messages") and len(chunk["messages"]) > 0:
                 latest_message = chunk["messages"][-1]
-                if self._is_ai_message(latest_message) and self._message_to_text(latest_message):
-                    yield latest_message
+                if self._is_ai_message(latest_message):
+                    if hasattr(latest_message, "tool_calls") and latest_message.tool_calls:
+                        tool_call_count += 1
+                        if tool_call_count > self.max_iterations:
+                            break
+                        continue
+                    text = self._message_to_text(latest_message)
+                    if text:
+                        yield latest_message
 
     def execute_stream(self, query: str, session_id: Optional[str] = None) -> Iterator[str]:
         for event in self.stream_events(query, session_id=session_id):
@@ -48,6 +60,7 @@ class ReActAgent(Runnable):
         config: Optional[RunnableConfig] = None,
     ) -> Iterator[Dict[str, Any]]:
         input_dict = self._build_input(query, session_id)
+        tool_call_count = 0
         saw_tool_call = False
         final_message = None
 
@@ -62,6 +75,9 @@ class ReActAgent(Runnable):
                 continue
 
             if hasattr(latest_message, "tool_calls") and latest_message.tool_calls:
+                tool_call_count += 1
+                if tool_call_count > self.max_iterations:
+                    break
                 saw_tool_call = True
                 final_message = latest_message
                 continue
@@ -71,6 +87,9 @@ class ReActAgent(Runnable):
             text = self._message_to_text(latest_message)
             if text:
                 yield {"type": "text", "text": text}
+
+        if tool_call_count > self.max_iterations:
+            yield {"type": "text", "text": MAX_ITERATIONS_REACHED}
 
         metadata = self._extract_message_metadata(final_message)
         if session_id and final_message is not None:
