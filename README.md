@@ -56,10 +56,13 @@ SweepRAG/
 git clone https://github.com/xiaomumu1203/SweepRAG.git
 cd SweepRAG
 python -m venv venv
+
 # Windows (CMD / PowerShell):
 .\venv\Scripts\activate
+
 # Mac / Linux (Bash / Zsh):
 # source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
@@ -73,6 +76,7 @@ DASHSCOPE_API_KEY=sk-xxx
 # 方式二（临时设置，仅当前终端有效）：
 # Windows (CMD):
 # set DASHSCOPE_API_KEY=sk-xxx
+
 # Mac / Linux:
 # export DASHSCOPE_API_KEY=sk-xxx
 ```
