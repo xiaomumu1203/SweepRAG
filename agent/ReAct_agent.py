@@ -61,7 +61,6 @@ class ReActAgent(Runnable):
     ) -> Iterator[Dict[str, Any]]:
         input_dict = self._build_input(query, session_id)
         tool_call_count = 0
-        saw_tool_call = False
         final_message = None
 
         for chunk in self.agent.stream(
@@ -78,7 +77,6 @@ class ReActAgent(Runnable):
                 tool_call_count += 1
                 if tool_call_count > self.max_iterations:
                     break
-                saw_tool_call = True
                 final_message = latest_message
                 continue
 
