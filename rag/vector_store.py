@@ -5,7 +5,7 @@ from langchain_chroma import Chroma
 from utils.config_handler import chroma_config
 from model.factory import embedding_model
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from utils.file_handler import txt_loader,pdf_loader,listdir_with_allowed_type,get_file_md5_hex
+from utils.file_handler import txt_loader,pdf_loader,md_loader,docx_loader,listdir_with_allowed_type,get_file_md5_hex
 from utils.logger_handler import logger
 from langchain_classic.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
@@ -161,6 +161,10 @@ class SweepRAGVectorStore:
                 document = txt_loader(file_path)
             elif file_path.endswith('pdf'):
                 document = pdf_loader(file_path)
+            elif file_path.endswith('.md'):
+                document = md_loader(file_path)
+            elif file_path.endswith(('.docx', '.doc')):
+                document = docx_loader(file_path)
 
             if not document:
                 logger.warning(f"{file_path}知识库内没有有效内容")

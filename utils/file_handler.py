@@ -52,5 +52,19 @@ def pdf_loader(file_path:str,password=None) -> list[Document]:
 def txt_loader(file_path) -> list[Document]:
     return TextLoader(file_path,encoding="utf-8").load()
 
+def md_loader(file_path: str) -> list[Document]:
+    """使用 unstructured 加载 Markdown 文件"""
+    from unstructured.partition.auto import partition
+    elements = partition(filename=file_path)
+    text = "\n\n".join(str(el) for el in elements)
+    return [Document(page_content=text, metadata={"source": file_path})]
+
+def docx_loader(file_path: str) -> list[Document]:
+    """使用 unstructured 加载 Word 文档"""
+    from unstructured.partition.auto import partition
+    elements = partition(filename=file_path)
+    text = "\n\n".join(str(el) for el in elements)
+    return [Document(page_content=text, metadata={"source": file_path})]
+
 
 
