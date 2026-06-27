@@ -23,7 +23,6 @@ def get_logger(
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
-    # uvicorn --reload 场景下清除残留的旧 handlers
     logger.handlers.clear()
 
     #配置控制台的handler

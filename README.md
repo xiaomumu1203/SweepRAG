@@ -1,6 +1,6 @@
 # SweepRAG — 智能 RAG + ReAct Agent 客服系统
 
-基于 **LangChain** + **通义千问 qwen3-max** 构建的扫地机器人智能客服系统，支持 **混合检索（向量 + BM25 双路召回 + RRF 融合）**、**ReAct 模式自主推理与工具调用**、**Redis 持久化记忆**、**摘要式上下文压缩**，同时提供 **Streamlit** 和 **FastAPI** 双前端支持。
+基于 **LangChain** + **通义千问 qwen3-max** 构建的扫地机器人智能客服系统，支持 **混合检索（向量 + BM25 双路召回 + RRF 融合）**、**ReAct 模式自主推理与工具调用**、**Redis 持久化记忆**、**摘要式上下文压缩**，使用 **Streamlit** 作为前端。
 
 ## 项目结构
 
@@ -11,17 +11,12 @@ SweepRAG/
 │   ├── tools/
 │   │   ├── agent_tools.py     # 工具定义（RAG检索/时间/计算器）
 │   │   └── middleware.py      # 中间件（日志/监控）
-├── backend/                   # FastAPI 后端
-│   ├── main.py                # API 路由（会话/聊天/知识库）
-│   └── schemas.py             # Pydantic 数据模型
 ├── config/                    # YAML 配置
 │   ├── agent.yml              # Agent & Redis 配置
 │   ├── chroma.yml             # 向量库 & 检索配置
 │   ├── prompts.yml            # 提示词路径配置
 │   └── rag.yml                # Embedding & 模型配置
 ├── data/                      # 知识库文档源文件
-├── frontend/                  # FastAPI 前端页面
-│   └── index.html             # 单页 HTML（SSE 流式）
 ├── memory/
 │   ├── redis_manager.py       # Redis 会话/消息管理
 │   └── context_compressor.py  # 摘要式上下文压缩（动态 Token 感知）
@@ -40,7 +35,7 @@ SweepRAG/
 │   ├── prompt_loader.py       # 提示词加载
 │   ├── token_counter.py       # 本地 Token 计数（tiktoken）
 │   └── logger_handler.py      # 日志配置
-├── app.py                     # Streamlit 前端（可替换）
+├── app.py                     # Streamlit 前端
 ├── requirements.txt           # Python 依赖
 ```
 
@@ -82,14 +77,8 @@ DASHSCOPE_API_KEY=sk-xxx
 ```
 
 ### 4. 启动
-**方式一：Streamlit**
 ```bash
 streamlit run app.py
-```
-
-**方式二：FastAPI**
-```bash
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ## 核心架构
@@ -155,6 +144,6 @@ _persist_turn → Redis 存储
 | **向量库** | ChromaDB + text-embedding-v4 |
 | **检索** | 向量检索 + BM25 双路召回 + RRF 融合 |
 | **记忆** | Redis（持久化会话/消息） |
-| **前端** | Streamlit / FastAPI + HTML/SSE |
+| **前端** | Streamlit |
 | **配置** | YAML（PyYAML） |
 | **Token 计数** | tiktoken（cl100k_base，本地实时） |
